@@ -9,12 +9,15 @@ public class PokerServer{
 	private BufferedReader bin;
 	private int serverPORT = 6666;
 	private Player player;
+	
+	//Can be changed as needed. Number of players needed for match
 	private int numPlayers = 3;
 	private int playerCounter = 0;
 	private boolean debugMode = true;
 	private boolean readyToPlay = false;
 	private boolean firstRound = true;
 	
+	//Blind variables for betting
 	private Player littleBlind;
 	private Player bigBlind;
 	
@@ -22,9 +25,12 @@ public class PokerServer{
 	private Player[] Clients;
 	
 	public void start() throws IOException {
+		
+		//Create array of players for the match
 		Clients = new Player[numPlayers];
 		
 		serverSocket = new ServerSocket(serverPORT);
+		
 		while (!readyToPlay) {
 			try{
 				//Store Player in array
@@ -32,12 +38,6 @@ public class PokerServer{
 				playerCounter++;
 				
 				if (playerCounter == numPlayers) { readyToPlay = true;}
-				
-				// //Get Player Name
-				// System.out.println("Retrieving player data...");
-				// player.Name = sendPlayerMessage("What is your Name?", player);
-				
-				// if(debugMode) {System.out.println(player.Name);}
 				
 			} catch(IOException e) {
 				System.out.println("Failed to connect to client...");
@@ -51,6 +51,7 @@ public class PokerServer{
 			//Begin Game Conversation
 			
 			//-----GET DECK OF CARDS-----//
+			
 			//remove for lil blind, peek for big blind
 			Queue<Player> BlindQueue = new LinkedList<Player>();
 
@@ -71,18 +72,21 @@ public class PokerServer{
 		}
 	}
 	
+	//Plays a round of bets
 	private void PlayRound(Player littleB, Player bigB) {
-		//Play a round of poker
-		
 		//Retrieve little blind
 		
 		//Retrieve Big blind\
 		
-		//While there is next player, Ask next player RAISE, BET, FOLD? 
+		//While there is next player, Ask next player RAISE, CALL, FOLD? 
 	}
 	
+	//Preflop round. Betting is done before the flop
+	private void playPreFlop(Player littleB, Player bigB) {
+		
+	}
 	//Flop is first round. 3 community cards are flipped.
-	private void playFlop(Player littleBlind, Player bigBlind) {
+	private void playFlop(Player littleB, Player bigB) {
 
 	}
 	
@@ -101,7 +105,7 @@ public class PokerServer{
 	}
 	
 	//player matches the bet
-	private void playerBet() {
+	private void playerCall() {
 		
 	}
 	
