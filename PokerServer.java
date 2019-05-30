@@ -13,6 +13,7 @@ public class PokerServer{
 	private int playerCounter = 0;
 	private boolean debugMode = true;
 	private boolean readyToPlay = false;
+	private boolean firstRound = true;
 	
 	private Player littleBlind;
 	private Player bigBlind;
@@ -60,7 +61,12 @@ public class PokerServer{
 			littleBlind = BlindQueue.remove();
 			bigBlind = BlindQueue.peek();
 			
-			PlayRound(littleBlind, bigBlind);
+			if (firstRound) {
+				playFlop(littleBlind, bigBlind);
+			} else {
+				PlayRound(littleBlind, bigBlind);
+			}
+			//Puts little blind in back of queue
 			BlindQueue.add(littleBlind);
 		}
 	}
@@ -68,10 +74,35 @@ public class PokerServer{
 	private void PlayRound(Player littleB, Player bigB) {
 		//Play a round of poker
 		
+		//Retrieve little blind
+		
+		//Retrieve Big blind\
+		
+		//While there is next player, Ask next player RAISE, BET, FOLD? 
+	}
+	
+	//Flop is first round. 3 community cards are flipped.
+	private void playFlop(Player littleBlind, Player bigBlind) {
+
 	}
 	
 	private void DealCards() {
 		//Deal the players their hands and 3 cards for house
+	}
+	
+	//Player raises a bet
+	private void playerRaise() {
+		
+	}
+	
+	//Player folds their hand and leaves the round.
+	private void playerFold() {
+		
+	}
+	
+	//player matches the bet
+	private void playerBet() {
+		
 	}
 	
 	private Player fetchPlayer() throws IOException {
