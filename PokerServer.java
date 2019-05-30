@@ -45,6 +45,7 @@ public class PokerServer{
 		}
 		//Deal the deck
 		DealCards();
+		//Initial conditions of match have been met, proceed to play match.
 		playGame();
 	}
 	
@@ -153,7 +154,7 @@ public class PokerServer{
     }
 	
 	//Starts the game of poker.
-	public void playGame() {
+	private void playGame() {
 		//TODO
 		
 		while (readyToPlay) {
@@ -179,6 +180,11 @@ public class PokerServer{
 			//Puts little blind in back of queue
 			BlindQueue.add(littleBlind);
 		}
+	}
+	
+	//Method for after a game has ended, declares winner amd ends connections safely.
+	private void endGame() {
+		
 	}
 	
 	public static void main(String[] args) throws IOException{

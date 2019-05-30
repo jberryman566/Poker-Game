@@ -6,7 +6,11 @@ public class Player{
 	public Socket clientSocket;
 	public PrintWriter pout;
 	public BufferedReader bin;
-	public String Name;
-
 	
+	//Players name they supply
+	public String Name;
+	
+	//How much money player has
+	public int Cash;
+
 }
