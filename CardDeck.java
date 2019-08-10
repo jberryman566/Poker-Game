@@ -1,8 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package carddeck;
 
 import java.util.Arrays;
@@ -17,6 +13,7 @@ import java.util.List;
 public class CardDeck { 
      
     private String [] carddeck;  
+    private int top; 
     
     /** CardDeck when called creates an array of length 52
      * It then creates the various suites of cards and finally shuffles the  
@@ -25,7 +22,8 @@ public class CardDeck {
     public CardDeck() { 
     carddeck = new String [51];//Creates an empty array of length 52 
     //This for loop will create the heart suits  
-    // The numbers besdides the letter will determine the card value 
+    // The numbers besdides the letter will determine the card value  
+         top = 52; // set top pointer to the top of the card-deck
     for (int i=0;i<12;i++){  
         int n=1;
         carddeck[i] = "H"+n; 
@@ -47,41 +45,34 @@ public class CardDeck {
         n++;             
     } 
     //Finally, shuffle the array just like a deck of cards
-    List <String> l = Arrays.asList(carddeck);
-    Collections.shuffle(l);
+    List <String> l = Arrays.asList(carddeck); 
+       Collections.shuffle(l);  
 }
-    
-    public String Draw() throws NoCardsException{  
-        if(carddeck[0]==null){ 
+    // Method draw checks to see if we have any cards left, then pops 
+    // the top card off the deck using variable "top"
+    public String draw() throws NoCardsException{  
+        if(top==0){ // If top = 0 , then there are no more cards in deck
             throw new NoCardsException("No more cards in deck"); 
         }else{
-        String card; 
-        if(carddeck[51]==null){ 
-            card = carddeck[51]; 
-            carddeck[51]=null;
-        }else{ 
-            int i=0; 
-            while(carddeck[i]!=null){ 
-                i++;
-            } 
-            card=carddeck[i]; 
-            carddeck[i]=null;
+        String card = carddeck[top]; // pop the top card out of the deck
+             top--; // set top to point at the next card
         }
-        return card;
+        return card; // return the popped card 
     }  
  
        
-}  
-    public Void Shuffle() throws NoCardsException{ 
-    if(carddeck[0]==null){ 
-            throw new NoCardsException("No more cards in deck"); 
+}   
+    // Method shuffle checks to see if we have any cards left, 
+    // then shuffle the deck using method shuffle from the collections library 
+    public void shuffle() throws NoCardsException{
+    if(top==0){ // If top = 0 , then there are no more cards in deck     
+         throw new NoCardsException("No more cards in deck");
         }else{   
        List <String> l = Arrays.asList(carddeck); 
        Collections.shuffle(l); 
     }  
-        return null;
     
-    }
+  }
         
        
     
