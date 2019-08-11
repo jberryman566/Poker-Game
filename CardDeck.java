@@ -50,11 +50,12 @@ public class CardDeck {
 }
     // Method draw checks to see if we have any cards left, then pops 
     // the top card off the deck using variable "top"
-    public String draw() throws NoCardsException{  
+    public String draw() throws NoCardsException{   
+        String Card;
         if(top==0){ // If top = 0 , then there are no more cards in deck
             throw new NoCardsException("No more cards in deck"); 
         }else{
-        String card = carddeck[top]; // pop the top card out of the deck
+        card = carddeck[top]; // pop the top card out of the deck
              top--; // set top to point at the next card
         }
         return card; // return the popped card 
