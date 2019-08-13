@@ -8,7 +8,8 @@ public class PokerServer{
 	private PrintWriter pout;
 	private BufferedReader bin;
 	private int serverPORT = 6666;
-	private Player player;
+	private Player player; 
+	private CardDeck deck;
 	
 	//Can be changed as needed. Number of players needed for match
 	private int numPlayers = 3;
