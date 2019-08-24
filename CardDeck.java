@@ -1,10 +1,8 @@
 
-package carddeck;
-
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
+import java.io.*;
 /**
  *
  * @author jakobvalen 
@@ -50,31 +48,25 @@ public class CardDeck {
 }
     // Method draw checks to see if we have any cards left, then pops 
     // the top card off the deck using variable "top"
-    public String draw() throws NoCardsException{   
-        String Card;
+    public String draw(){   
+        String card = "";
         if(top==0){ // If top = 0 , then there are no more cards in deck
-            throw new NoCardsException("No more cards in deck"); 
+            //throw new EmptyStackException(); 
         }else{
         card = carddeck[top]; // pop the top card out of the deck
              top--; // set top to point at the next card
         }
         return card; // return the popped card 
     }  
- 
-       
-}   
+    
     // Method shuffle checks to see if we have any cards left, 
     // then shuffle the deck using method shuffle from the collections library 
-    public void shuffle() throws NoCardsException{
-    if(top==0){ // If top = 0 , then there are no more cards in deck     
-         throw new NoCardsException("No more cards in deck");
+    public void shuffle(){
+		if(top==0){ // If top = 0 , then there are no more cards in deck     
+			//throw new EmptyStackException();
         }else{   
-       List <String> l = Arrays.asList(carddeck); 
-       Collections.shuffle(l); 
-    }  
-    
-  }
-        
-       
-    
+			List <String> l = Arrays.asList(carddeck); 
+			Collections.shuffle(l); 
+		}  
+	}   
 }
