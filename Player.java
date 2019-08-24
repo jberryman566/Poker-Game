@@ -12,5 +12,8 @@ public class Player{
 	
 	//How much money player has
 	public int Cash;
+	
+	//Players Handler
+	public String[] Hand = new String[2];
 
 }

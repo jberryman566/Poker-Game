@@ -71,7 +71,17 @@ public class PokerServer{
 	//Method for dealing players hands. 2 cards to each player.
 	//Will store the players hands locally in server in the player objects.
 	private void DealCards() {
-		//Deal the players their hands and 3 cards for house
+		//Deal the players their hands
+		//Create Deck
+		deck = new CardDeck();
+		//Deal to players
+		for (Player player : Clients) {
+			
+			player.Hand[0] = deck.draw();
+			player.Hand[1] = deck.draw();
+			System.out.println(player.Name + " has a hand of " + player.Hand[0] + ", " + player.Hand[1]);
+		}
+		
 	}
 	
 	//Player raises a bet
