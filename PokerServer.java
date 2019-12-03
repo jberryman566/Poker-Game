@@ -12,7 +12,7 @@ public class PokerServer{
 	private CardDeck deck;
 	
 	//Can be changed as needed. Number of players needed for match
-	private int numPlayers = 3;
+	private int numPlayers = 1;
 	private int playerCounter = 0;
 	private boolean debugMode = true;
 	private boolean readyToPlay = false;
@@ -25,7 +25,7 @@ public class PokerServer{
 	//Array of Clients
 	private Player[] Clients;
 	
-	public void start() throws IOException {
+	public void start() throws IOException, NoCardsException {
 		
 		//Create array of players for the match
 		Clients = new Player[numPlayers];
@@ -45,6 +45,7 @@ public class PokerServer{
 			}
 		}
 		//Deal the deck
+		
 		DealCards();
 		//Initial conditions of match have been met, proceed to play match.
 		playGame();
@@ -70,17 +71,24 @@ public class PokerServer{
 	
 	//Method for dealing players hands. 2 cards to each player.
 	//Will store the players hands locally in server in the player objects.
-	private void DealCards() {
+	private void DealCards() throws NoCardsException {
 		//Deal the players their hands
 		//Create Deck
 		deck = new CardDeck();
 		//Deal to players
 		for (Player player : Clients) {
 			
-			player.Hand[0] = deck.draw();
-			player.Hand[1] = deck.draw();
-			System.out.println(player.Name + " has a hand of " + player.Hand[0] + ", " + player.Hand[1]);
+			try {
+				player.Hand[0] = deck.draw();
+				player.Hand[1] = deck.draw();
+				System.out.println(player.Name + " has a hand of " + player.Hand[0] + ", " + player.Hand[1]);
+			} catch (NoCardsException e){
+				System.out.println("Failed to draw a card...");
+			}
+		
 		}
+		
+		return;
 		
 	}
 	
@@ -165,9 +173,9 @@ public class PokerServer{
     }
 	
 	//Starts the game of poker.
-	private void playGame() {
+	private void playGame() throws IOException {
 		//TODO
-		
+
 		while (readyToPlay) {
 			//Begin Game Conversation
 			
@@ -194,11 +202,24 @@ public class PokerServer{
 	}
 	
 	//Method for after a game has ended, declares winner amd ends connections safely.
-	private void endGame() {
+	private void endGame() throws IOException {
 		
+		String response;
+		//Tell Clients Game Over
+		System.out.println("Ending Game...");
+		for(Player client : Clients){
+			
+			try {
+				response = sendPlayerMessage("GAME_OVER!", client);
+				client.clientSocket.close();
+			} catch (IOException e){
+				System.out.println("Failed to close connection with client...");
+			}
+		}
+		stop();
 	}
 	
-	public static void main(String[] args) throws IOException{
+	public static void main(String[] args) throws IOException, NoCardsException{
 		PokerServer server = new PokerServer();
 		
 		try {

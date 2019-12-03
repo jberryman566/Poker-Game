@@ -32,6 +32,17 @@ public class Client{
 		
 		while (hasConnection) {
 			//Begin Game Conversation
+			String response = getMessage();
+			System.out.println(response);
+			//Create menu to deal with specific string messages
+			if(response.equals("GAME_OVER!")){
+				System.out.println("Game Over, Closing Conection!");
+				pout.println("GoodBye");
+				pout.close();
+				bin.close();
+				clientSocket.close();
+				hasConnection = false;
+			}
 		}
 	}
 	

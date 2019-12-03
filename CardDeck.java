@@ -6,90 +6,80 @@ import java.io.*;
 import java.util.Stack;
 /**
  *
- * @author jakobvalen 
+ * @author jakobvalen, modified by joshberryman Dec 3rd 2019
  *
  */ 
 public class CardDeck { 
      
     private Stack<String> carddeck;
-	private Stack<String> tempdeck;	
+	private Stack<String> deckTemplate;	
     private int numberOfCardsLeft; 
     
-    /** CardDeck when called creates an array of length 52
+    /** CardDeck when called creates a stack of size 52
      * It then creates the various suites of cards and finally shuffles the  
      * cards
      */
     public CardDeck() { 
-    carddeck = new Stack<String>();//Creates an empty array of length 52 
-    //This for loop will create the heart suits  
-    // The numbers besdides the letter will determine the card value  
-         numberOfCardsLeft = 51; // set numberOfCardsLeft pointer to the numberOfCardsLeft of the card-deck
+		
+		carddeck = new Stack<String>();//Creates an empty array of length 52 
     
-	int n=0;
-	for (int i=0;i<=13;i++){  
+		//The numbers beside the letter will determine the card value  (Ace = 1, King = 13)
+		numberOfCardsLeft = 52;
+    
+		int n=1;
+		for (int i=0;i<=13;i++){  
         
-        carddeck.push("H"+n); 
-        
-		System.out.println("H"+n);
-		
-		n++;
-    } 
+			carddeck.push("H"+n); 
+			n++;
+		} 
 	
-	n=0;
-    for (int i=13;i<=26;i++){ //For loop for Diamonds suits
+		n=1;
+		for (int i=13;i<=26;i++){
          
-        carddeck.push("D"+n); 
-        
-		System.out.println("D"+n);
-		
-		n++;
-    }
+			carddeck.push("D"+n); 
+			n++;
+		}
 
-	n=0;	
-    for (int i=26;i<=39;i++){ //For loop for Clubs suits
+		n=1;	
+		for (int i=26;i<=39;i++){
         
-        carddeck.push("C"+n); 
-        
-		System.out.println("C"+n);
-		
-		n++;
-    }
+			carddeck.push("C"+n); 
+			n++;
+		}
 
-	n=0;	
-    for (int i=39;i<=52;i++){ //For loop for Spades suits
+		n=1;	
+		for (int i=39;i<=52;i++){ //For loop for Spades suits
          
-        carddeck.push("S"+n); 
+			carddeck.push("S"+n);
+			n++;             
+		} 
 		
-		System.out.println("S"+n);
-		
-        n++;             
-    } 
-	tempdeck = carddeck;
-    //Finally, shuffle the array just like a deck of cards
-    //List <String> l = Arrays.asList(carddeck); 
-    Collections.shuffle(carddeck);  
-}
-    // Method draw checks to see if we have any cards left, then pops 
-    // the numberOfCardsLeft card off the deck using variable "numberOfCardsLeft"
-    public String draw(){   
+		//Template for base deck
+		deckTemplate = carddeck;
+		//Finally, shuffle the array just like a deck of cards 
+		Collections.shuffle(carddeck);  
+	}
+    
+	/* Draw is used to draw the top card from the stack
+	*  Throws emty card exception if stack is empty.
+	*/
+    public String draw() throws NoCardsException{   
         String card = "";
-        if(numberOfCardsLeft==0){ // If numberOfCardsLeft = 0 , then there are no more cards in deck
-            //throw new EmptyStackException(); 
+        if(numberOfCardsLeft==0){
+            throw new NoCardsException("Error: The Card deck is empty."); 
         }else{
-        card = carddeck.pop(); // pop the numberOfCardsLeft card out of the deck
-             numberOfCardsLeft--; // set numberOfCardsLeft to point at the next card
+			card = carddeck.pop();
+            numberOfCardsLeft--;
         }
-        return card; // return the popped card 
+        return card;
     }  
     
-    // Method shuffle checks to see if we have any cards left, 
-    // then shuffle the deck using method shuffle from the collections library 
+    /* Shuffle is used to restart the deck and shuffle the contents
+	*/
     public void shuffle(){
-		if(numberOfCardsLeft==0){ // If numberOfCardsLeft = 0 , then there are no more cards in deck     
-			//throw new EmptyStackException();
-        }else{
-			carddeck = tempdeck; 
-			Collections.shuffle(carddeck); 
-		}  
+		
+		carddeck = deckTemplate; 
+		numberOfCardsLeft = 52;
+		Collections.shuffle(carddeck); 	  
 	}   
 }
