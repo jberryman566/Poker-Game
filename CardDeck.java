@@ -6,7 +6,7 @@ import java.io.*;
 import java.util.Stack;
 /**
  *
- * @author jakobvalen, modified by joshberryman Dec 3rd 2019
+ * @author jakobvalen, modified by joshberryman Dec 4th 2019
  *
  */ 
 public class CardDeck { 
@@ -22,48 +22,36 @@ public class CardDeck {
     public CardDeck() { 
 		
 		carddeck = new Stack<String>();//Creates an empty array of length 52 
-    
-		//The numbers beside the letter will determine the card value  (Ace = 1, King = 13)
 		numberOfCardsLeft = 52;
-    
-		int n=1;
-		for (int i=0;i<=13;i++){  
-        
-			carddeck.push("H"+n); 
-			n++;
-		} 
-	
-		n=1;
-		for (int i=13;i<=26;i++){
-         
-			carddeck.push("D"+n); 
-			n++;
-		}
-
-		n=1;	
-		for (int i=26;i<=39;i++){
-        
-			carddeck.push("C"+n); 
-			n++;
-		}
-
-		n=1;	
-		for (int i=39;i<=52;i++){ //For loop for Spades suits
-         
-			carddeck.push("S"+n);
-			n++;             
-		} 
+		
+		//Create Suits (H = Hearts, D = Diamonds, C = Clubs, S = Spades)
+		createSuit("H");
+		createSuit("D");
+		createSuit("C");
+		createSuit("S");
 		
 		//Template for base deck
 		deckTemplate = carddeck;
 		//Finally, shuffle the array just like a deck of cards 
 		Collections.shuffle(carddeck);  
 	}
+	
+	/* Method for creating a suit that is passed and putting on stack.
+	*  The numbers beside the letter will determine the card value  (Ace = 1, King = 13)
+	*/
+	private void createSuit(String suit){
+		
+		for (int i=0;i<=13;i++){  
+        
+			carddeck.push(suit+i); 
+		}
+	}
     
 	/* Draw is used to draw the top card from the stack
 	*  Throws emty card exception if stack is empty.
 	*/
-    public String draw() throws NoCardsException{   
+    public String draw() throws NoCardsException{  
+	
         String card = "";
         if(numberOfCardsLeft==0){
             throw new NoCardsException("Error: The Card deck is empty."); 
