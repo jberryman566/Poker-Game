@@ -25,7 +25,7 @@ public class Client{
 			startConnection("127.0.0.1", 6666);
 			hasConnection = true;
 			//Initialize Player Data With Server
-			initializeData();
+			//initializeData();
 		} catch(IOException e) {
 			System.out.println("Failed to connect to server...");
 		}
