@@ -24,10 +24,11 @@ public class GameServer{
 	
 	//Array of Clients
 	private Player[] Clients;
-	private Queue<String[]> Tasks;
+	private Queue<Tuple> Tasks;
 	
 	private void start() throws IOException, NoCardsException {
 		
+		System.out.println("Starting up Game Server...");
 		//Create array of players for the match
 		Clients = new Player[numPlayers];
 		
@@ -35,44 +36,69 @@ public class GameServer{
 		Tasks = new LinkedList<>();
 		
 		serverSocket = new ServerSocket(serverPORT);
-		serverSocket.setSoTimeout(500);
+		serverSocket.setSoTimeout(1000);
 		run();
 		
 	}
 	
 	private void run() throws IOException{
 		
+		System.out.println("Initializing game lobby, waiting for players...");
+		
 		boolean inMenu = true;
+		
 		while(inMenu){
 			
-			
 			//Check for any client connections
-			Clients[playerCounter] = fetchPlayer();
+			Player player = fetchPlayer();
+			if (player != null){
+				Clients[playerCounter] = player;
+				playerCounter++;
+			}
 			
 			//Check for tasks
-			if (playerCounter > 1){
+			if (playerCounter >= 1){
 				checkForUpdates();
 			}
 			
 			//Do a task
 			if (Tasks.size() != 0){
-				String[] task = Tasks.remove();
-				if(task.length > 2){
-					System.out.println("Command: " + task[0] + ", Operand: " + task[1] + ", Value: " + task[2]);
+				Tuple task = Tasks.remove();
+				String[] command = task.get_command();
+				if(command.length > 2){
+					//SET command has been issued
+					System.out.println("Command: " + command[0] + ", Operand: " + command[1] + ", Value: " + command[2]);
+					if (command[0].equals("SET")){
+						
+						//SET NAME
+						if (command[1].equals("NAME")){
+							player = task.get_player();
+							player.setName(command[2]);
+							System.out.println("Player name set to: " + player.getName());
+						}
+					}
 				} else {
-					System.out.println("Command: "+ task[0] + ", Operand: " + task[1]);
+					//GET command has been issued
+					System.out.println("Command: "+ command[0] + ", Operand: " + command[1]);
 				}
 			}
 			
 		}		
 	}
 	
-	private void checkForUpdates(){
+	private void checkForUpdates() throws IOException{
 		
-		for (Player player : Clients){
-			String response = player.getBufferedReader().readLine();
-			String[] task = response.split(" ");
-			Tasks.add(task);
+		try {
+			for (Player player : Clients){
+				
+				if (player != null){
+					String response = player.getBufferedReader().readLine();
+					String[] task = response.split(" ");
+					Tasks.add(new Tuple(task, player));
+				}
+			}
+		} catch (IOException e) {
+			System.out.println("Error: Failed to retrieve tasks");
 		}
 	}
 	
@@ -81,32 +107,27 @@ public class GameServer{
 	//Method for waiting and accepting a new player connection. Returns Player.
 	private Player fetchPlayer() throws IOException {
 		
+		player = null;
+		
 		try {
-			System.out.println("Waiting for player to connect...");
+			//System.out.println("Waiting for player to connect...");
 
 			clientSocket = serverSocket.accept();
 			System.out.println("Creating new player...");
 			player = createPlayer(clientSocket);
-			playerCounter++;
+			System.out.println("New player added...");
 				
 		} catch(IOException e) {
-			System.out.println("Failed to retrieve new player...");
+			//System.out.println("Failed to retrieve new player...");
 		}
 		return player;
 	}
 	
 	//Method for sending generic string methods to players and returns a response.
-	private String sendPlayerMessage(String message, Player player) throws IOException{
-		String response;
-		try{
-			player.getPrintWriter().println(message);
-			response = player.getBufferedReader().readLine();
-			
-		} catch(IOException e) {
-			response = "Failed to connect to client...";
-		}
+	private void sendPlayerMessage(String message, Player player){
 		
-		return response;
+		player.getPrintWriter().println(message);
+		//response = player.getBufferedReader().readLine();
 	}
 	
 	//Method for creating new player objects for client connections. Returns Player object.
@@ -119,6 +140,9 @@ public class GameServer{
 		try {
 			player.setPrintWriter(new PrintWriter(client.getOutputStream(), true));
 			player.setBufferedReader(new BufferedReader(new InputStreamReader(client.getInputStream())));
+			
+			//Message player to confirm added
+			sendPlayerMessage("Successfully added to game.", player);
 		} catch(IOException e) {
 			System.out.println("Failed to connect to client...");
 		}
@@ -153,3 +177,26 @@ public class GameServer{
 		
 	}
 }
+
+class Tuple{
+	
+	private String[] command;
+	private Player player;
+	
+	public Tuple(String[] item_a, Player item_b){
+	
+		command = item_a;
+		player = item_b;
+	}
+	
+	public String[] get_command(){
+		return command;
+	}
+	
+	public Player get_player(){
+		return player;
+	}
+		
+
+}
+

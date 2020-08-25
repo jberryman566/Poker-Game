@@ -24,17 +24,27 @@ public class Client{
 		try {
 			startConnection("127.0.0.1", 6666);
 			hasConnection = true;
-			//Initialize Player Data With Server
-			//initializeData();
+			
+			//Verify connection
+			String response = getMessage();
+			System.out.println(response);
+			
+			//Send player name
+			System.out.println("Enter Player Name:");
+			String name = reader.next();
+			pout.println("SET NAME " + name);
+			
 		} catch(IOException e) {
 			System.out.println("Failed to connect to server...");
 		}
 		
 		while (hasConnection) {
 			//Begin Game Conversation
+			//Create menu to deal with specific string messages
 			String response = getMessage();
 			System.out.println(response);
-			//Create menu to deal with specific string messages
+			//PRINT MENU
+			
 			if(response.equals("GAME_OVER!")){
 				System.out.println("Game Over, Closing Conection!");
 				pout.println("GoodBye");
