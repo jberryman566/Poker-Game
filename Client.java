@@ -38,6 +38,8 @@ public class Client{
 			System.out.println("Failed to connect to server...");
 		}
 		
+		printMenu();
+		
 		while (hasConnection) {
 			//Begin Game Conversation
 			//Create menu to deal with specific string messages
@@ -46,15 +48,25 @@ public class Client{
 			//PRINT MENU
 			
 			if(response.equals("GAME_OVER!")){
-				System.out.println("Game Over, Closing Conection!");
+				System.out.println("Game Over, Closing Connection!");
 				pout.println("GoodBye");
 				pout.close();
 				bin.close();
 				clientSocket.close();
 				hasConnection = false;
+			} else if(response.equals("RESPOND")){
+				System.out.println("System Checking timeout, responding!");
+				pout.println("HERE");
 			}
 		}
 	}
+	
+	private void printMenu(){
+		
+		//
+		System.out.println("\n\nMENU:");
+	}
+	
 	
 	public String getMessage () throws IOException {
 		String response;
@@ -68,6 +80,7 @@ public class Client{
 		return response;
 	}
 	
+	/*
 	public void initializeData() throws IOException {
 		//Start Conversation with Server
 		String response = getMessage();
@@ -78,14 +91,15 @@ public class Client{
 			System.out.println("Failed to respond to server...");
 		}
 	}
-	
+	*/
+	/*
 	public void answerServer(String message) throws IOException {
 		System.out.println(message);
 		String answer = reader.next();
 		pout.println(answer);
 		
 	}
-	
+	*/
 	public static void main(String[] args) throws IOException{
 		Client client = new Client();
 		

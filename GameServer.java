@@ -3,13 +3,14 @@ import java.io.*;
 import java.util.*;
 
 public class GameServer{
+	
+	//Variables for player objects
 	private ServerSocket serverSocket;
 	private Socket clientSocket;
 	private PrintWriter pout;
 	private BufferedReader bin;
 	private int serverPORT = 6666;
 	private Player player; 
-	//private CardDeck deck;
 	
 	//Can be changed as needed. Number of players needed for match
 	private int numPlayers = 5;
@@ -18,12 +19,9 @@ public class GameServer{
 	private boolean readyToPlay = false;
 	private boolean firstRound = true;
 	
-	//Blind variables for betting
-	private Player littleBlind;
-	private Player bigBlind;
-	
+
 	//Array of Clients
-	private Player[] Clients;
+	protected static Player[] Clients;
 	private Queue<Tuple> Tasks;
 	
 	private void start() throws IOException, NoCardsException {
@@ -45,6 +43,7 @@ public class GameServer{
 		
 		System.out.println("Initializing game lobby, waiting for players...");
 		
+		new ConnectionThread();
 		boolean inMenu = true;
 		
 		while(inMenu){
@@ -58,16 +57,21 @@ public class GameServer{
 			
 			//Check for tasks
 			if (playerCounter >= 1){
+				
 				checkForUpdates();
 			}
 			
 			//Do a task
 			if (Tasks.size() != 0){
+				
 				Tuple task = Tasks.remove();
 				String[] command = task.get_command();
+				
 				if(command.length > 2){
+					
 					//SET command has been issued
 					System.out.println("Command: " + command[0] + ", Operand: " + command[1] + ", Value: " + command[2]);
+					
 					if (command[0].equals("SET")){
 						
 						//SET NAME
@@ -77,33 +81,70 @@ public class GameServer{
 							System.out.println("Player name set to: " + player.getName());
 						}
 					}
-				} else {
+				} else if (command.length == 2){
 					//GET command has been issued
 					System.out.println("Command: "+ command[0] + ", Operand: " + command[1]);
+				
+				} else {
+					
+					//Player started match
+					if (command.equals("PLAY")){
+						System.out.println("Starting match...");
+					}
 				}
 			}
-			
 		}		
+	}
+	
+	//Method will be used to check status of all player connections
+	//Check for timeouts.
+	protected void checkConnections(){
+		
+		for (Player player : Clients){
+				
+			if (player != null) {
+				
+				
+				//Need to ping a message to each client and wait for a response
+				if(messagePlayerWithResponse("RESPOND", player)){
+						
+						//Player is reachable, connection is good.
+					System.out.println("Player is here...");
+				} else {
+						
+						//Player is not reachable, connection is bad, drop the connection and reorder clients
+					System.out.println("Player quit...");
+					
+				}
+				
+			}
+		}	
 	}
 	
 	private void checkForUpdates() throws IOException{
 		
+		System.out.println("Checking for updates");
+		
 		try {
+			
 			for (Player player : Clients){
 				
+				System.out.println("Checking a client...");
+				
 				if (player != null){
+					
+					System.out.println("Asking for response...");
 					String response = player.getBufferedReader().readLine();
+					System.out.println("Response given...");
 					String[] task = response.split(" ");
 					Tasks.add(new Tuple(task, player));
 				}
 			}
 		} catch (IOException e) {
-			System.out.println("Error: Failed to retrieve tasks");
+			System.out.println("Error: Failed to retrieve tasks...");
 		}
 	}
-	
-	
-	
+			
 	//Method for waiting and accepting a new player connection. Returns Player.
 	private Player fetchPlayer() throws IOException {
 		
@@ -118,16 +159,32 @@ public class GameServer{
 			System.out.println("New player added...");
 				
 		} catch(IOException e) {
-			//System.out.println("Failed to retrieve new player...");
+			System.out.println("Failed to retrieve new player...");
 		}
 		return player;
 	}
 	
 	//Method for sending generic string methods to players and returns a response.
-	private void sendPlayerMessage(String message, Player player){
+	private void sendPlayerMessage(String message, Player player) throws IOException{
 		
 		player.getPrintWriter().println(message);
-		//response = player.getBufferedReader().readLine();
+	}
+	
+	protected boolean messagePlayerWithResponse(String message, Player player){
+		
+		try {
+			player.getPrintWriter().println(message);
+			String resp = player.getBufferedReader().readLine();
+			
+			System.out.println(resp);
+			
+			if(resp.equals("HERE")){
+				return true;
+			}
+			return false;
+		} catch (IOException e){
+			return false;
+		}
 	}
 	
 	//Method for creating new player objects for client connections. Returns Player object.
@@ -175,6 +232,64 @@ public class GameServer{
 			System.out.println("Failed to start server...");	
 		}
 		
+	}
+}
+
+class ConnectionThread implements Runnable {
+	
+	Thread t;
+	ConnectionThread() {
+		t = new Thread(this, "Thread");
+		System.out.println("Child thread: " + t);
+		t.start();
+	}
+	
+	public void run(){
+		
+		//try {
+			Timer connectionTimer = new Timer();
+			connectionTimer.schedule(new TimerTask() {
+				
+				public void run(){
+					
+					try{
+						check();
+					} catch (Exception e){
+					
+					}
+				}
+			}, 0, 60*1000);
+		//} catch (InterruptedException e) {
+		//	System.out.println("The child thread is interrupted.");
+		//}
+    }
+	
+	public void check() throws IOException{
+		Player[] clients = GameServer.Clients;
+		for (Player player : clients){
+			
+			if (player != null) {
+				
+				try {
+					player.getPrintWriter().println("RESPOND");
+					String resp = player.getBufferedReader().readLine();
+	
+					System.out.println(resp);
+					//Need to ping a message to each client and wait for a response
+					if(resp.equals("HERE")){
+				
+						//Player is reachable, connection is good.
+						System.out.println("Player is here...");
+					} else {
+				
+						//Player is not reachable, connection is bad, drop the connection and reorder clients
+						System.out.println("Player quit...");
+					}
+				} catch (IOException e){
+					
+				}
+			}
+		}
 	}
 }
 
